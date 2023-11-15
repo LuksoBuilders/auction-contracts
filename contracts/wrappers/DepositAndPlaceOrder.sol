@@ -1,18 +1,23 @@
 pragma solidity >=0.6.8;
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../EasyAuction.sol";
-import "../interfaces/IWETH.sol";
+import "../interfaces/ILSP7DigitalAsset.sol";
+import "../IEasyAuction.sol";
+import "../interfaces/ILYX.sol";
 
 contract DepositAndPlaceOrder {
-    EasyAuction public immutable easyAuction;
-    IWETH public immutable nativeTokenWrapper;
+    IEasyAuction public immutable easyAuction;
+    ILYX public immutable nativeTokenWrapper;
 
-    constructor(address easyAuctionAddress, address _nativeTokenWrapper)
-        public
-    {
-        nativeTokenWrapper = IWETH(_nativeTokenWrapper);
-        easyAuction = EasyAuction(easyAuctionAddress);
-        IERC20(_nativeTokenWrapper).approve(easyAuctionAddress, uint256(-1));
+    constructor(
+        address easyAuctionAddress,
+        address _nativeTokenWrapper
+    ) public {
+        nativeTokenWrapper = ILYX(_nativeTokenWrapper);
+        easyAuction = IEasyAuction(easyAuctionAddress);
+        ILSP7DigitalAsset(_nativeTokenWrapper).authorizeOperator(
+            easyAuctionAddress,
+            uint256(-1),
+            ""
+        );
     }
 
     function depositAndPlaceOrder(
@@ -22,7 +27,7 @@ contract DepositAndPlaceOrder {
         bytes calldata allowListCallData
     ) external payable returns (uint64 userId) {
         uint96[] memory sellAmounts = new uint96[](1);
-        require(msg.value < 2**96, "too much value sent");
+        require(msg.value < 2 ** 96, "too much value sent");
         nativeTokenWrapper.deposit{value: msg.value}();
         sellAmounts[0] = uint96(msg.value);
         return

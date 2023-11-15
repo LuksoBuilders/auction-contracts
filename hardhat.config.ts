@@ -66,6 +66,9 @@ placeManyOrders();
 deployEasyAuctionContract();
 deployVerifier();
 
+const TESTNET_PRIVATE_KEY =
+// 0x776af2774206C8e2043b4733Ad92361ed9a1989f
+
 export default {
   paths: {
     artifacts: "build/artifacts",
@@ -95,6 +98,10 @@ export default {
       accounts: {
         accountsBalance: "1000000000000000000000000000000",
       },
+    },
+    lukso_testnet: {
+      url: "https://rpc.testnet.lukso.network",
+      accounts: [TESTNET_PRIVATE_KEY],
     },
     mainnet: {
       ...sharedNetworkConfig,
